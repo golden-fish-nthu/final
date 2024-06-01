@@ -6,3 +6,4 @@ int main(int argc, char **argv)
 	game->game_destroy(game);
 	return 0;
 }
+

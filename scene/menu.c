@@ -1,56 +1,110 @@
-#include <allegro5/allegro_primitives.h>
 #include "menu.h"
-#include <stdbool.h>
-/*
-   [Menu function]
-*/
-Scene *New_Menu(int label)
-{
+#include "../scene/sceneManager.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+Scene *New_Menu(int label) {
     Menu *pDerivedObj = (Menu *)malloc(sizeof(Menu));
-    Scene *pObj = New_Scene(label);
-    // setting derived object member
-    pDerivedObj->font = al_load_ttf_font("assets/font/pirulen.ttf", 12, 0);
-    // Load sound
-    pDerivedObj->song = al_load_sample("assets/sound/menu.mp3");
+    if (!pDerivedObj) {
+        fprintf(stderr, "Failed to allocate memory for Menu object\n");
+        return NULL;
+    }
+
+    Scene *pObj = (Scene *)malloc(sizeof(Scene));
+    if (!pObj) {
+        fprintf(stderr, "Failed to allocate memory for Scene object\n");
+        free(pDerivedObj);
+        return NULL;
+    }
+
+    pDerivedObj->font = al_load_ttf_font("assets/font/main.ttf", 30, 0);
+    pDerivedObj->font_title = al_load_ttf_font("assets/font/main.ttf", 60, 0);
+    pDerivedObj->song = al_load_sample("assets/sound/menumusic.mp3");
     al_reserve_samples(20);
     pDerivedObj->sample_instance = al_create_sample_instance(pDerivedObj->song);
     pDerivedObj->title_x = WIDTH / 2;
     pDerivedObj->title_y = HEIGHT / 2;
-    // Loop the song until the display closes
+    pDerivedObj->selected_option = 0;
+    pDerivedObj->last_key_time = 0.0;
+    pDerivedObj->background_image = al_load_bitmap("assets/image/stage.jpg");
+
+
     al_set_sample_instance_playmode(pDerivedObj->sample_instance, ALLEGRO_PLAYMODE_LOOP);
     al_restore_default_mixer();
     al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance, al_get_default_mixer());
-    // set the volume of instance
     al_set_sample_instance_gain(pDerivedObj->sample_instance, 0.1);
+
     pObj->pDerivedObj = pDerivedObj;
-    // setting derived object function
     pObj->Update = menu_update;
     pObj->Draw = menu_draw;
     pObj->Destroy = menu_destroy;
+    pObj->scene_end = false;
+
     return pObj;
 }
-void menu_update(Scene *self)
-{
-    if (key_state[ALLEGRO_KEY_ENTER])
-    {
-        self->scene_end = true;
-        window = 1;
+
+void menu_update(Scene *self) {
+    Menu *Obj = (Menu *)(self->pDerivedObj);
+    if (key_state[ALLEGRO_KEY_ENTER]) {
+        switch (Obj->selected_option) {
+            case 0:
+                self->scene_end = true;
+                window = 1;
+                break;
+            case 1:
+                self->scene_end = true;
+                window = 2;
+                break;
+            case 2:
+                self->scene_end = true;
+                window = -1;
+                break;
+        }
     }
-    return;
+
+    const double KEY_PRESS_INTERVAL = 0.2;
+
+    if (al_get_time() - Obj->last_key_time > KEY_PRESS_INTERVAL) {
+        if (key_state[ALLEGRO_KEY_W]) {
+            Obj->selected_option--;
+            if (Obj->selected_option < 0)
+                Obj->selected_option = 2;
+            Obj->last_key_time = al_get_time();
+        } else if (key_state[ALLEGRO_KEY_S]) {
+            Obj->selected_option++;
+            if (Obj->selected_option > 2)
+                Obj->selected_option = 0;
+            Obj->last_key_time = al_get_time();
+        }
+    }
 }
-void menu_draw(Scene *self)
-{
-    Menu *Obj = ((Menu *)(self->pDerivedObj));
-    al_draw_text(Obj->font, al_map_rgb(255, 255, 255), Obj->title_x, Obj->title_y, ALLEGRO_ALIGN_CENTRE, "Press 'Enter' to start");
-    al_draw_rectangle(Obj->title_x - 150, Obj->title_y - 30, Obj->title_x + 150, Obj->title_y + 30, al_map_rgb(255, 255, 255), 0);
+
+void menu_draw(Scene *self) {
+    Menu *Obj = (Menu *)(self->pDerivedObj);
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+
+    if (Obj->background_image) {
+        al_draw_bitmap(Obj->background_image, 0, 0, 0);
+    }
+
+    al_draw_text(Obj->font_title, al_map_rgb(255, 0, 0), WIDTH / 2, HEIGHT / 4, ALLEGRO_ALIGN_CENTRE, "kitchen chaos");
+
+    const char *options[] = {"Start Game", "Introduction", "Exit"};
+    for (int i = 0; i < 3; i++) {
+        ALLEGRO_COLOR color = (i == Obj->selected_option) ? al_map_rgb(0, 0, 0) : al_map_rgb(255, 255, 255);
+        al_draw_text(Obj->font, color, Obj->title_x, Obj->title_y + i * 40, ALLEGRO_ALIGN_CENTRE, options[i]);
+    }
+
     al_play_sample_instance(Obj->sample_instance);
 }
-void menu_destroy(Scene *self)
-{
-    Menu *Obj = ((Menu *)(self->pDerivedObj));
-    al_destroy_font(Obj->font);
-    al_destroy_sample(Obj->song);
-    al_destroy_sample_instance(Obj->sample_instance);
+
+void menu_destroy(Scene *self) {
+    Menu *Obj = (Menu *)(self->pDerivedObj);
+    if (Obj->font) al_destroy_font(Obj->font);
+    if (Obj->font_title) al_destroy_font(Obj->font_title);
+    if (Obj->song) al_destroy_sample(Obj->song);
+    if (Obj->sample_instance) al_destroy_sample_instance(Obj->sample_instance);
+    if (Obj->background_image) al_destroy_bitmap(Obj->background_image);
     free(Obj);
     free(self);
 }

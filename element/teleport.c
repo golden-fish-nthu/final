@@ -11,8 +11,8 @@ Elements *New_Teleport(int label)
     pDerivedObj->img = al_load_bitmap("assets/image/teleport.png");
     pDerivedObj->width = al_get_bitmap_width(pDerivedObj->img);
     pDerivedObj->height = al_get_bitmap_height(pDerivedObj->img);
-    pDerivedObj->x = WIDTH - pDerivedObj->width;
-    pDerivedObj->y = HEIGHT - pDerivedObj->height;
+    pDerivedObj->x = WIDTH - pDerivedObj->width - 50;
+    pDerivedObj->y = 100;
     pDerivedObj->activate = false;
     // setting the interact object
     pObj->inter_obj[pObj->inter_len++] = Character_L;

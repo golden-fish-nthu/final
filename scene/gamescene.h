@@ -1,6 +1,7 @@
 #ifndef GAMESCENE_H_INCLUDED
 #define GAMESCENE_H_INCLUDED
 #include "scene.h"
+#include <allegro5/allegro_font.h>
 #include "../element/element.h"
 #include "../element/charater.h"
 #include "../element/floor.h"
@@ -21,7 +22,14 @@ typedef enum EleType
 typedef struct _GameScene
 {
     ALLEGRO_BITMAP *background;
-
+    ALLEGRO_SAMPLE *song;
+    ALLEGRO_FONT *font;
+    double startTime;
+    double countdownTime;  // 倒计时时间
+    double remainingTime;  // 剩余时间
+    bool timeUp; 
+    double timeUpStart;    // Time's Up开始时间
+    int score;
 } GameScene;
 Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);
