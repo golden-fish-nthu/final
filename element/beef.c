@@ -39,7 +39,7 @@ const ALLEGRO_KEYBOARD_STATE *keyboard_state; // 設定
 void Beef_update(Elements *ele) {
     Beef *Obj = (Beef *)(ele->pDerivedObj);
     if (key_state[ALLEGRO_KEY_Z]) { // 偵測拿起來
-        Obj->is_picked = 1;
+        Obj->is_picked = false;
     }
 }
 void Beef_interact(Elements *self, Elements *tar) {
@@ -59,20 +59,18 @@ void Beef_interact(Elements *self, Elements *tar) {
 
 void Beef_draw(Elements *self) {
     Beef *Obj = ((Beef *)(self->pDerivedObj));
-    if (Obj->is_picked == 0) {
-        for (int i = 0; i < 10; i++)
-            for (int j = 0; j < 16; j++)
-                if (Obj->map_data[i][j] == 10) // 跟著動
-                    al_draw_bitmap(Obj->img, Obj->x + j * Obj->width, Obj->y + i * Obj->height, 0);
-    } else {
+    if (Obj->is_picked)
+        al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    else {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 16; j++) {
-                al_draw_bitmap(Obj->img, Obj->x + j * Obj->width, Obj->y + i * Obj->height, 0);
+                if (Obj->map_data[i][j] == 10) { // 跟著動
+                    al_draw_bitmap(Obj->img, Obj->x + j * Obj->width, Obj->y + i * Obj->height, 0);
+                }
             }
         }
     }
 }
-
 void Beef_destory(Elements *self) {
     Beef *Obj = ((Beef *)(self->pDerivedObj));
     al_destroy_bitmap(Obj->img);
