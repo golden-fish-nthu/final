@@ -9,6 +9,6 @@ typedef enum SceneType
     Introduction_L=2,
     GameOver_L=3
 } SceneType;
-void create_scene(SceneType);
+void create_scene(SceneType, int);
 
 #endif

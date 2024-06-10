@@ -25,6 +25,7 @@ typedef void (*fptrDestroy)(Scene *);
 struct _Scene
 {
     int label;
+    int score; 
     void *pDerivedObj;
     bool scene_end;
     int ele_num;

@@ -1,7 +1,7 @@
 #ifndef FLOOR_H_INCLUDED
 #define FLOOR_H_INCLUDED
 #include "element.h"
-#include "charater.h"
+#include "charater.h" // Include character.h
 #include "../scene/gamescene.h" // for element label
 /*
    [floor object]
@@ -11,7 +11,7 @@ typedef struct _Floor
     int x, y;          // the position of image
     int width, height; // the width and height of image
     ALLEGRO_BITMAP *img;
-    int map_data[6][6];
+    int map_data[10][16];
 } Floor;
 
 Elements *New_Floor(int label);

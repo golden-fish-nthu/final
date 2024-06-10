@@ -6,6 +6,7 @@
 Elements *New_Floor(int label)
 {
     Floor *pDerivedObj = (Floor *)malloc(sizeof(Floor));
+    printf("floor label is %d\n", label);
     Elements *pObj = New_Elements(label);
     // setting derived object member
     pDerivedObj->img = al_load_bitmap("assets/image/floor.png");
@@ -28,9 +29,9 @@ void _Floor_load_map(Floor *floor)
 {
     FILE *data;
     data = fopen("assets/map/gamescene_map.txt", "r");
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 10; i++)
     {
-        for (int j = 0; j < 6; j++)
+        for (int j = 0; j < 16; j++)
         {
             fscanf(data, "%d", &floor->map_data[i][j]);
         }
@@ -47,22 +48,22 @@ void Floor_interact(Elements *self, Elements *tar)
         int left_limit = 0 - chara->width / 2;
         if (chara->x < left_limit)
         {
-            _Character_update_position(tar, (left_limit - chara->x), 0);
+            _Character_update_position(tar, (left_limit - chara->x), 0, chara->scene);
         }
         else if (chara->x > right_limit)
         {
-            _Character_update_position(tar, (right_limit - chara->x), 0);
+            _Character_update_position(tar, (right_limit - chara->x), 0, chara->scene);
         }
     }
 }
 void Floor_draw(Elements *self)
 {
     Floor *Obj = ((Floor *)(self->pDerivedObj));
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 10; i++)
     {
-        for (int j = 0; j < 6; j++)
+        for (int j = 0; j < 16; j++)
         {
-            if (Obj->map_data[i][j])
+            if (Obj->map_data[i][j]==1)
             {
                 al_draw_bitmap(Obj->img, Obj->x + j * Obj->width, Obj->y + i * Obj->height, 0);
             }

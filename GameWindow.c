@@ -82,7 +82,7 @@ void game_init(Game *self)
     self->display = al_create_display(WIDTH, HEIGHT);
     GAME_ASSERT(self->display, "failed to create display.");
 
-    create_scene(Menu_L);
+    create_scene(Menu_L, 0);
 
     event_queue = al_create_event_queue();
     GAME_ASSERT(event_queue, "failed to create event queue.");
@@ -107,14 +107,17 @@ bool game_update(Game *self)
     scene->Update(scene);
     if (scene->scene_end)
     {
+        int temp_score = scene->score;
         scene->Destroy(scene);
+        //scene->score=temp_score;
+        //printf("game_update: %d", scene->score);
         switch (window)
         {
         case 0:
-            create_scene(Menu_L);
+            create_scene(Menu_L, temp_score);
             break;
         case 1:
-            create_scene(GameScene_L);
+            create_scene(GameScene_L, temp_score);
             break;
 
         case -1:
@@ -122,9 +125,13 @@ bool game_update(Game *self)
         default:
             break;
         case 2:
-            create_scene(Introduction_L);
+            create_scene(Introduction_L, temp_score);
+            break;
+        case 3:
+            create_scene(GameOver_L, temp_score);
             break;
         }
+        
     }
     return true;
 }
